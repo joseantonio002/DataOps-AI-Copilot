@@ -1,0 +1,11 @@
+incident_id,line,station,category,severity,status,opened_at,resolved_at,description
+INC-001,L1,Central,signal_failure,critical,open,2026-09-07 07:15:00,,Signal system unavailable at Central station
+INC-002,L2,North,delay,medium,resolved,2026-09-06 08:30:00,2026-09-06 09:10:00,Train delayed due to technical inspection
+INC-003,L1,Airport,door_failure,high,open,2026-09-07 09:05:00,,Train door cannot close correctly
+INC-004,L3,University,overcrowding,low,resolved,2026-09-05 17:40:00,2026-09-05 18:05:00,High passenger volume during peak hours
+INC-005,L2,Harbour,power_failure,critical,resolved,2026-09-04 13:20:00,2026-09-04 14:55:00,Power supply interruption affecting station
+INC-006,L3,Central,delay,medium,open,2026-09-07 10:45:00,,Service running approximately 20 minutes late
+INC-007,L1,South,security,high,open,2026-09-07 11:10:00,,Suspicious unattended object reported on platform
+INC-008,L2,Airport,signal_failure,high,resolved,2026-09-03 06:50:00,2026-09-03 08:00:00,Intermittent signalling problems
+INC-009,L3,North,maintenance,low,open,2026-09-07 12:00:00,,Escalator unavailable due to scheduled maintenance
+INC-010,L1,Central,delay,medium,resolved,2026-09-02 16:20:00,2026-09-02 17:05:00,Train delayed after previous service disruption
