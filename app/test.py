@@ -24,16 +24,21 @@ tools = [
         "function": {
             "name": "get_incidents",
             "description": (
-                "Retrieve individual transport incidents. "
-                "Use this when the user wants to see, list, inspect, "
-                "or filter specific incidents by line, severity or status."
+                "Retrieve individual transport incidents from the database. "
+                "Use this tool when the user wants to list, inspect, or filter "
+                "specific incidents by transport line, severity, or status. "
+                "Do not use this tool for aggregate counts, comparisons, or rankings."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "line": {
                         "type": ["string", "null"],
-                        "description": "Transport line, e.g. L1, L2."
+                        "enum": ["L1", "L2", "L3", None],
+                        "description": (
+                            "Transport line to filter by. "
+                            "Use null when the user does not specify a line."
+                        ),
                     },
                     "severity": {
                         "type": ["string", "null"],
@@ -42,49 +47,80 @@ tools = [
                             "medium",
                             "high",
                             "critical",
-                            None
-                        ]
+                            None,
+                        ],
+                        "description": (
+                            "Incident severity to filter by. "
+                            "Use null when no severity filter is required."
+                        ),
                     },
                     "status": {
                         "type": ["string", "null"],
-                        "description": "Incident status such as open or closed."
-                    }
+                        "enum": [
+                            "open",
+                            "resolved",
+                            None,
+                        ],
+                        "description": (
+                            "Incident status to filter by. "
+                            "Use null when no status filter is required."
+                        ),
+                    },
                 },
-                "required": ["line", "severity", "status"],
-                "additionalProperties": False
-            }
-        }
+                "required": [
+                    "line",
+                    "severity",
+                    "status",
+                ],
+                "additionalProperties": False,
+            },
+        },
     },
-
     {
         "type": "function",
         "function": {
             "name": "get_incident_statistics",
             "description": (
-                "Calculate aggregated incident statistics. "
-                "Use this for counts, comparisons, trends, rankings "
-                "or questions asking which line has more incidents."
+                "Get aggregated incident counts grouped by transport line "
+                "over a specified number of previous days, based on when incidents "
+                "were opened. Use this tool for counts, comparisons, rankings, "
+                "or questions about which line has more or fewer incidents. "
+                "It can analyze all transport lines or only a selected subset. "
+                "Do not use this tool when the user wants individual incident records."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "days": {
                         "type": "integer",
-                        "description": "Number of previous days to analyze."
+                        "minimum": 1,
+                        "description": (
+                            "Number of previous days to include in the analysis. "
+                            "For example, use 7 for the last 7 days."
+                        ),
                     },
                     "lines": {
                         "type": ["array", "null"],
-                        "items": {"type": "string"},
+                        "items": {
+                            "type": "string",
+                            "enum": ["L1", "L2", "L3"],
+                        },
+                        "uniqueItems": True,
                         "description": (
-                            "Lines to analyze. Null means all lines."
-                        )
-                    }
+                            "Transport lines to include in the analysis. "
+                            "Use null to analyze all lines. "
+                            "For example, ['L1', 'L3'] compares only L1 and L3."
+                        ),
+                    },
                 },
-                "required": ["days", "lines"],
-                "additionalProperties": False
-            }
-        }
-    }
+                "required": [
+                    "days",
+                    "lines",
+                ],
+                "additionalProperties": False,
+            },
+        },
+    },
 ]
 
 class IncidentAnalysis(BaseModel):
