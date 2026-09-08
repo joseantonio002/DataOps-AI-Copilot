@@ -9,9 +9,6 @@ from typing import Literal
 from app.tools.incidents import get_incidents
 from app.tools.statistics import get_incident_statistics
 
-print(get_incidents(None, None, None))
-print(get_incident_statistics(days=5))
-
 def main():
     print("Calling main")
 
@@ -138,8 +135,6 @@ TOOL_REGISTRY = {
 # ============================================================
 # LLM
 # ============================================================
-
-"""
 
 def call_llm(messages: list[dict]) -> dict:
 
@@ -325,4 +320,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-"""
