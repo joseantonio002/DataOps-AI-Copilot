@@ -1,18 +1,25 @@
 import sqlite3
 import csv
 from pathlib import Path
+import yaml
 
-DB_NAME = "incidents.db"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
 
-db_path = Path(__file__).resolve().parent.parent
 
-data_folder_path = db_path / "data"
+def load_config() -> dict:
+    with CONFIG_PATH.open(encoding="utf-8") as config_file:
+        return yaml.safe_load(config_file)
 
-db_path = data_folder_path / DB_NAME
-csv_path = data_folder_path / "incidents.csv"
+
+CONFIG = load_config()
+DATA_FOLDER_PATH = PROJECT_ROOT / CONFIG["paths"]["data"]
+DB_PATH = DATA_FOLDER_PATH / CONFIG["db_name"]
+CSV_PATH = DATA_FOLDER_PATH / CONFIG["incidents_csv_name_file"]
+TABLE_NAME = CONFIG["table_name"]
 
 CREATE_TABLE_SQL = """
-CREATE TABLE IF NOT EXISTS incidents (
+CREATE TABLE IF NOT EXISTS {table_name} (
     incident_id TEXT PRIMARY KEY,
     line TEXT NOT NULL,
     station TEXT NOT NULL,
@@ -25,17 +32,13 @@ CREATE TABLE IF NOT EXISTS incidents (
 )
 """
 
-DELETE_ALL = """
-DELETE FROM incidents
-"""
 
 def load_incidents() -> None:
-    with sqlite3.connect(db_path) as connection:
+    with sqlite3.connect(DB_PATH) as connection:
         cursor = connection.cursor()
-        cursor.execute(CREATE_TABLE_SQL)
-        cursor.execute(DELETE_ALL)
+        cursor.execute(CREATE_TABLE_SQL.format(table_name=TABLE_NAME))
 
-        with csv_path.open(newline="", encoding="utf-8") as csv_file:
+        with CSV_PATH.open(newline="", encoding="utf-8") as csv_file:
             reader = csv.DictReader(csv_file)
             rows = [
                 (
@@ -53,8 +56,8 @@ def load_incidents() -> None:
             ]
 
         cursor.executemany(
-            """
-            INSERT OR REPLACE INTO incidents (
+            f"""
+            INSERT OR REPLACE INTO {TABLE_NAME} (
                 incident_id, line, station, category, severity, status,
                 opened_at, resolved_at, description
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

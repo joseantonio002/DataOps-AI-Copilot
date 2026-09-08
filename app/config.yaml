@@ -1,0 +1,6 @@
+db_name: incidents.db
+table_name: incidents
+incidents_csv_name_file: incidents.csv
+paths: # paths are relative to the root directory of the project
+  data: data 
+  docs: docs
