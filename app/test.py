@@ -19,6 +19,7 @@ headers = {
 }
 
 class IncidentAnalysis(BaseModel):
+    # Whether to ignore, allow, or forbid extra data during model initialization. Defaults to 'ignore'
     model_config = ConfigDict(extra="forbid")
 
     summary: str
