@@ -18,6 +18,75 @@ headers = {
     "Content-Type": "application/json"
 }
 
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_incidents",
+            "description": (
+                "Retrieve individual transport incidents. "
+                "Use this when the user wants to see, list, inspect, "
+                "or filter specific incidents by line, severity or status."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "line": {
+                        "type": ["string", "null"],
+                        "description": "Transport line, e.g. L1, L2."
+                    },
+                    "severity": {
+                        "type": ["string", "null"],
+                        "enum": [
+                            "low",
+                            "medium",
+                            "high",
+                            "critical",
+                            None
+                        ]
+                    },
+                    "status": {
+                        "type": ["string", "null"],
+                        "description": "Incident status such as open or closed."
+                    }
+                },
+                "required": ["line", "severity", "status"],
+                "additionalProperties": False
+            }
+        }
+    },
+
+    {
+        "type": "function",
+        "function": {
+            "name": "get_incident_statistics",
+            "description": (
+                "Calculate aggregated incident statistics. "
+                "Use this for counts, comparisons, trends, rankings "
+                "or questions asking which line has more incidents."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "days": {
+                        "type": "integer",
+                        "description": "Number of previous days to analyze."
+                    },
+                    "lines": {
+                        "type": ["array", "null"],
+                        "items": {"type": "string"},
+                        "description": (
+                            "Lines to analyze. Null means all lines."
+                        )
+                    }
+                },
+                "required": ["days", "lines"],
+                "additionalProperties": False
+            }
+        }
+    }
+]
+
 class IncidentAnalysis(BaseModel):
     # Whether to ignore, allow, or forbid extra data during model initialization. Defaults to 'ignore'
     model_config = ConfigDict(extra="forbid")
@@ -28,8 +97,7 @@ class IncidentAnalysis(BaseModel):
     confidence: float
 
 incident = """
-El sistema de validación de billetes lleva
-25 minutos sin responder.
+Wich lines had the most incidents in the last month?
 """
 
 payload = {
@@ -50,6 +118,11 @@ payload = {
     ],
     "reasoning_effort": "low",
     "max_completion_tokens": 100,
+    "tools": tools,
+    "tool_choice": "auto"
+}
+
+"""
     "response_format": {
         "type": "json_schema",
         "json_schema": {
@@ -58,7 +131,9 @@ payload = {
             "schema": IncidentAnalysis.model_json_schema()
         }
     },
-}
+"""
+
+
 
 response = requests.post(
     url,
@@ -71,9 +146,8 @@ if not response.ok:
     print(response.text)
     response.raise_for_status()
 
+#content = response.json()["choices"][0]["message"]["content"]
 
-content = response.json()["choices"][0]["message"]["content"]
+#analysis = IncidentAnalysis.model_validate_json(content)
 
-analysis = IncidentAnalysis.model_validate_json(content)
-
-print(analysis)
+print(response.json())
