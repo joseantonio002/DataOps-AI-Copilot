@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from utils import CONFIG_PATH
+from .utils import CONFIG_PATH
 import yaml
 import sqlite3
 
