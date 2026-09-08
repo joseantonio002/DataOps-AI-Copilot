@@ -1,0 +1,60 @@
+dataset: incidents
+version: "1.0"
+
+source:
+  type: csv_file
+  name: incidents.csv
+  source_owner: https://joseantonio002.github.io/
+
+schema:
+  incident_id:
+    type: string
+    nullable: false
+  line:
+    type: string
+    nullable: false
+  station:
+    type: string
+    nullable: false
+  category:
+    type: string
+    nullable: false
+  severity:
+    type: string
+    nullable: false
+  status:
+    type: string
+    nullable: false
+  opened_at:
+    type: string
+    nullable: false
+  resolved_at:
+    type: string
+    nullable: true
+  description:
+    type: string
+    nullable: false
+
+quality:
+  duplicates:
+    maximum: 0
+
+  null_percentage:
+    incident_id:
+      maximum: 0
+    line:
+      maximum: 0
+    station:
+      maximum: 0
+    category:
+      maximum: 0
+    severity:
+      maximum: 0
+    status:
+      maximum: 0
+    opened_at:
+      maximum: 0
+    resolved_at:
+      maximum: 100
+    description:
+      maximum: 0
