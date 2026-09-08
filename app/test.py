@@ -8,8 +8,13 @@ load_dotenv()
 
 url = "https://api.groq.com/openai/v1/chat/completions"
 
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', None)
+
+if GROQ_API_KEY is None:
+    raise Exception("Couldn't read GROQ_API_KEY")
+
 headers = {
-    "Authorization": f"Bearer {os.environ['GROQ_API_KEY']}",
+    "Authorization": f"Bearer {GROQ_API_KEY}",
     "Content-Type": "application/json"
 }
 
