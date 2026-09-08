@@ -68,3 +68,43 @@ The LLM does not access the database directly. It selects a tool and generates i
 ## Project status
 
 Work in progress.
+
+```
+dataops-ai-copilot/
+│
+├── app/
+│   ├── main.py
+│   ├── llm.py
+│   │
+│   ├── tools/
+│   │   ├── incidents.py
+│   │   ├── statistics.py
+│   │   └── documentation.py
+│   │
+│   ├── rag/
+│   │   ├── ingest.py
+│   │   ├── embeddings.py
+│   │   └── retriever.py
+│   │
+│   ├── models/
+│   │   └── schemas.py
+│   │
+│   └── db.py
+│
+├── data/
+│   └── incidents.csv
+│
+├── docs/
+│   ├── incident_management.md
+│   ├── sla.md
+│   └── escalation_policy.md
+│
+├── tests/
+│   └── test_tools.py
+│
+├── .env.example
+├── .gitignore
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
