@@ -6,8 +6,11 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Literal
 
+from app.rag.index import ProcedureIndex
 from app.tools.incidents import get_incidents
+from app.tools.procedures import configure_procedure_index, search_procedures
 from app.tools.statistics import get_incident_statistics
+from app.tools.utils import PROJECT_ROOT
 
 def main():
     print("Calling main")
@@ -45,6 +48,7 @@ transport operational incident analysis.
 You may:
 - retrieve and analyze incident data,
 - calculate incident statistics,
+- retrieve internal incident management procedures,
 - explain incident-related information.
 
 You must refuse requests unrelated to operational incidents.
@@ -74,6 +78,12 @@ class GetIncidentStatisticsArgs(BaseModel):
 
     days: int = Field(gt=0)
     lines: list[Literal["L1", "L2", "L3"]] | None
+
+
+class SearchProceduresArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    question: str
 
 
 # ============================================================
@@ -109,6 +119,20 @@ TOOLS = [
             "parameters": GetIncidentStatisticsArgs.model_json_schema(),
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_procedures",
+            "description": (
+                "Search internal Markdown procedure documents for relevant chunks. "
+                "Use this tool for questions about internal procedures, escalation "
+                "policies, SLAs, severity definitions, and incident management rules. "
+                "This tool only retrieves relevant documentation; use the returned "
+                "chunks to answer the user."
+            ),
+            "parameters": SearchProceduresArgs.model_json_schema(),
+        },
+    },
 ]
 
 
@@ -128,6 +152,10 @@ TOOL_REGISTRY = {
     "get_incident_statistics": (
         get_incident_statistics,
         GetIncidentStatisticsArgs,
+    ),
+    "search_procedures": (
+        search_procedures,
+        SearchProceduresArgs,
     ),
 }
 
@@ -283,6 +311,9 @@ def run_agent(
 # ============================================================
 
 def main():
+
+    procedure_index = ProcedureIndex.from_markdown_dir(PROJECT_ROOT / "docs")
+    configure_procedure_index(procedure_index)
 
     chat_history = [
         {
